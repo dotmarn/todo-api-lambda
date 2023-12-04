@@ -16,3 +16,19 @@ provider:
 
 plugins:
   - serverless-plugin-typescript
+
+resources:
+  Resources:
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TodosTable
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        AttributeDefinitions:
+          - AttributeName: todoID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: todoID
+            KeyType: HASH
