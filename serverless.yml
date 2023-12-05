@@ -7,19 +7,68 @@ service: todo-api
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: "3"
+frameworkVersion: "2"
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs16.x
+  lambdaHashingVersion: 20201221
   region: eu-north-1
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:Scan"
+          Resource:
+            - { "Fn::GetAtt": ["TodosTable", "Arn"] }
+
+functions:
+  createTodoItem:
+    handler: src/handlers.createTodoItem
+    events:
+      - httpApi:
+          path: /task
+          method: post
+          
+  getTodoItem:
+    handler: src/handlers.getTodoItem
+    events:
+      - httpApi:
+          path: /task/{id}
+          method: get
+
+  updateTodoItem:
+    handler: src/handlers.updateTodoItem
+    events:
+      - httpApi:
+          path: /task/{id}
+          method: put
+
+  listAllTodoItems:
+    handler: src/handlers.listAllTodoItems
+    events:
+      - httpApi:
+          path: /tasks
+          method: get
+          
+  deleteTodoItem:
+    handler: src/handlers.deleteTodoItem
+    events:
+      - httpApi:
+          path: /task/{id}
+          method: delete
 
 plugins:
   - serverless-plugin-typescript
 
 resources:
   Resources:
-    ProductsTable:
+    TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: TodosTable
