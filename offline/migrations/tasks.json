@@ -1,0 +1,21 @@
+{
+    "Table": {
+        "TableName": "todo-api-dev",
+        "KeySchema": [
+            {
+                "AttributeName": "todoID",
+                "KeyType": "HASH"
+            }
+        ],
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "todoID",
+                "AttributeType": "S"
+            }
+        ],
+        "ProvisionedThroughput": {
+            "ReadCapacityUnits": 1,
+            "WriteCapacityUnits": 1
+        }
+    }
+}
