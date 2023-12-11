@@ -7,14 +7,16 @@ service: todo-api
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: "2"
+frameworkVersion: "3"
 
 provider:
   name: aws
   runtime: nodejs16.x
-  lambdaHashingVersion: 20201221
-  region: eu-north-1
-
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${sls:stage}
+    DYNAMODB_ENDPOINT: http://localhost:8001
+  httpApi:
+    cors: true
   iam:
     role:
       statements:
@@ -24,40 +26,40 @@ provider:
             - "dynamodb:GetItem"
             - "dynamodb:DeleteItem"
             - "dynamodb:Scan"
-          Resource:
-            - { "Fn::GetAtt": ["TodosTable", "Arn"] }
+            - "dynamodb:Query"
+          Resource: "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
   createTodoItem:
-    handler: src/handlers.createTodoItem
+    handler: src/create.handler
     events:
       - httpApi:
           path: /task
           method: post
           
   getTodoItem:
-    handler: src/handlers.getTodoItem
+    handler: src/get.handler
     events:
       - httpApi:
           path: /task/{id}
           method: get
 
   updateTodoItem:
-    handler: src/handlers.updateTodoItem
+    handler: src/update.handler
     events:
       - httpApi:
           path: /task/{id}
           method: put
 
   listAllTodoItems:
-    handler: src/handlers.listAllTodoItems
+    handler: src/list.handler
     events:
       - httpApi:
           path: /tasks
           method: get
           
   deleteTodoItem:
-    handler: src/handlers.deleteTodoItem
+    handler: src/delete.handler
     events:
       - httpApi:
           path: /task/{id}
@@ -65,13 +67,15 @@ functions:
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-dynamodb
+  - serverless-offline
 
 resources:
   Resources:
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: TodosTable
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
@@ -81,3 +85,24 @@ resources:
         KeySchema:
           - AttributeName: todoID
             KeyType: HASH
+
+custom:
+  serverless-dynamodb:
+    stages:
+      - dev
+    start:
+      docker: true
+      port: 8001
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      convertEmptyValues: true
+    migration:
+      dir: offline/migrations
+  esbuild:
+    watch:
+      pattern: 
+        - 'src/**/*.ts'
+
