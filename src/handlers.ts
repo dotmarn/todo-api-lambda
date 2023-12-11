@@ -19,6 +19,12 @@ const schema = yup.object().shape({
     description: yup.string().required()
 });
 
+class HttpError extends Error {
+    constructor(public statusCode: number, body: Record<string, unknown> = {}) {
+        super(JSON.stringify(body));
+    }
+}
+
 const getTodoItemById = async (id: string) => {
     const result = await dbClient.send(new GetCommand({
         TableName: tableName,
@@ -33,11 +39,6 @@ const getTodoItemById = async (id: string) => {
 
     return result.Item;
 };
-class HttpError extends Error {
-    constructor(public statusCode: number, body: Record<string, unknown> = {}) {
-        super(JSON.stringify(body));
-    }
-}
 
 const handleError = (e: unknown) => {
     if (e instanceof yup.ValidationError) {
@@ -70,35 +71,3 @@ const handleError = (e: unknown) => {
 };
 
 export { dbClient, headers, schema, handleError, tableName, getTodoItemById };
-
-
-
-// export const updateTodoItem = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-//     try {
-//         const id = event.pathParameters?.id as string;
-
-//         await getTodoItemById(id);
-
-//         const reqBody = JSON.parse(event.body as string);
-
-//         await schema.validate(reqBody, { abortEarly: false });
-
-//         const item = {
-//             ...reqBody,
-//             todoID: id,
-//         };
-
-//         await dbClient.put({
-//             TableName: tableName,
-//             Item: item,
-//         }).promise();
-
-//         return {
-//             statusCode: 200,
-//             headers,
-//             body: JSON.stringify(item),
-//         };
-//     } catch (e) {
-//         return handleError(e);
-//     }
-// };

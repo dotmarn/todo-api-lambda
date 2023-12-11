@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dbClient, headers, schema, handleError, tableName } from './handlers';
 import { v4 } from "uuid";
 
