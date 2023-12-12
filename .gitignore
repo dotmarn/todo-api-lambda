@@ -3,3 +3,6 @@ package-lock.json
 .serverless
 .build
 .dynamodb
+.env
+.env.production
+.env.local
