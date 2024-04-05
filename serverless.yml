@@ -3,6 +3,7 @@
 
 # Serverless.yml is the configuration the CLI
 # uses to deploy your code to your provider of choice
+app: todo-api
 service: todo-api
 
 # You can pin your service to only deploy with a specific Serverless version
@@ -13,9 +14,16 @@ useDotenv: true
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
+  architecture: x86_64
+  stage: dev
+  region: us-east-1
+  memorySize: 512
+  timeout: 30
+  stackName: todo-api-${opt:stage}
+  deploymentMethod: changesets
   environment:
-    DYNAMODB_TABLE: ${self:service}-${sls:stage}
+    DYNAMODB_TABLE: ${self:service}-${opt:stage}
     DYNAMODB_ENDPOINT: ${env:DYNAMODB_ENDPOINT}
   httpApi:
     cors: true
