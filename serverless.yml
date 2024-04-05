@@ -25,6 +25,7 @@ provider:
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage}
     DYNAMODB_ENDPOINT: ${env:DYNAMODB_ENDPOINT}
+    
   httpApi:
     cors: true
   iam:
