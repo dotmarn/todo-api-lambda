@@ -11,7 +11,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
             body: JSON.stringify({
                 status: true,
                 data: item,
-                message: "Record fetched successfully......."
+                message: "Record fetched successfully........"
             }),
         };
     } catch (e) {
