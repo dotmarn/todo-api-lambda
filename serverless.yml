@@ -38,6 +38,7 @@ provider:
             - "dynamodb:DeleteItem"
             - "dynamodb:Scan"
             - "dynamodb:Query"
+            - "events:*"
           Resource: "*"
 
 functions:
