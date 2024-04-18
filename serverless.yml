@@ -38,7 +38,7 @@ provider:
             - "dynamodb:DeleteItem"
             - "dynamodb:Scan"
             - "dynamodb:Query"
-          Resource: "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+          Resource: "*"
 
 functions:
   createTodoItem:
