@@ -50,4 +50,4 @@ jobs:
           echo DYNAMODB_ENDPOINT=https://dynamodb.us-east-1.amazonaws.com >> .env
 
       - name: Serverless deploy
-        run: npx sls deploy -s staging -r us-east-1
+        run: npx sls remove -s staging -r us-east-1
